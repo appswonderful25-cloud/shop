@@ -1,5 +1,5 @@
 'use client';
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Moon, Bell, Sun, Search, PanelsTopLeft } from "lucide-react";
 import DropdownMenuAvatar from "@/components/header-components/AccountMenu";
 import { Notification } from "@/components/header-components/Notification";
@@ -10,10 +10,23 @@ import { useLanguage } from "@/app/store/LanguageContext";
 
 export default function Header({ toggleMenu, openMenus }: { toggleMenu: () => void; openMenus: boolean }) {
   const { theme, setTheme } = useTheme();
-  const { t, dir } = useLanguage();
+  const { t, dir, locale, setLocale } = useLanguage();
   const isMobile = useMobile("1350px");
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
+  const [langMenuOpen, setLangMenuOpen] = useState(false);
+  const langMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!langMenuOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (langMenuRef.current && !langMenuRef.current.contains(e.target as Node)) {
+        setLangMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [langMenuOpen]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,14 +80,14 @@ export default function Header({ toggleMenu, openMenus }: { toggleMenu: () => vo
         >
           {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
         </button>
-        
+
         {/* Language Switcher */}
         <div className="relative" ref={langMenuRef}>
           <button
             onClick={() => setLangMenuOpen(!langMenuOpen)}
-            className="bg-white dark:bg-black p-2 rounded-lg border-gray-200 border flex items-center justify-center cursor-pointer text-sm font-bold"
+            className="bg-white dark:bg-black p-2 rounded-lg border-gray-200 border flex items-center justify-center cursor-pointer text-sm font-bold min-w-[36px]"
           >
-            {bilingual ? "🌐" : (locale === "ar" ? "ع" : "A")}
+            {locale === "ar" ? "ع" : "A"}
           </button>
           {langMenuOpen && (
             <div className={`absolute top-full mt-2 w-48 bg-white dark:bg-black border border-gray-200 dark:border-zinc-800 rounded-lg shadow-lg z-50 ${dir === "rtl" ? "right-0" : "left-0"}`}>
@@ -88,7 +101,11 @@ export default function Header({ toggleMenu, openMenus }: { toggleMenu: () => vo
                 >
                   <span className="text-base">🇺🇸</span>
                   <span className="font-medium text-xs">English</span>
-                  {locale === "en" && <svg className={`w-3.5 h-3.5 ${dir === "rtl" ? "mr-auto" : "ml-auto"}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>}
+                  {locale === "en" && (
+                    <svg className="w-3.5 h-3.5 ml-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  )}
                 </button>
                 <button
                   onClick={() => { setLocale("ar"); setLangMenuOpen(false); }}
@@ -96,22 +113,17 @@ export default function Header({ toggleMenu, openMenus }: { toggleMenu: () => vo
                 >
                   <span className="text-base">🇸🇦</span>
                   <span className="font-medium text-xs">العربية</span>
-                  {locale === "ar" && <svg className={`w-3.5 h-3.5 ${dir === "rtl" ? "mr-auto" : "ml-auto"}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>}
-                </button>
-                <div className="border-t border-slate-100 dark:border-zinc-800 my-2 mx-2"></div>
-                <button
-                  onClick={() => { setBilingual(!bilingual); }}
-                  className="w-full flex items-center gap-2.5 px-3 py-2.5 text-left transition-all text-sm rounded-lg hover:bg-slate-50 dark:hover:bg-zinc-800"
-                >
-                  <span className="text-base">🌐</span>
-                  <span className="font-medium text-xs">{t("general.bilingual")}</span>
-                  {bilingual && <svg className={`w-3.5 h-3.5 ${dir === "rtl" ? "mr-auto" : "ml-auto"}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>}
+                  {locale === "ar" && (
+                    <svg className="w-3.5 h-3.5 ml-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  )}
                 </button>
               </div>
             </div>
           )}
         </div>
-        
+
         <DropdownMenuAvatar />
         <Notification />
       </div>

@@ -30,11 +30,12 @@ interface CustomerUser {
 }
 
 interface StoreSettings {
-  nameStore: string; descriptionStore: string; globalColor: string; headerColor: string; headerTextColor: string; footerColor: string;
+  nameStore: string; nameStoreAr?: string; descriptionStore: string; descriptionStoreAr?: string;
+  globalColor: string; headerColor: string; headerTextColor: string; footerColor: string;
   currency: string; language: string; emailStore: string; phoneStore: string; addressStore: string;
   urlLogo: string; urlImageHero: string; urlFavicon: string; seoTitle: string; seoDescription: string;
   seoKeywords: string; acceptCOD: boolean; acceptCard: boolean; acceptPaypal: boolean;
-  taxPercentage: number; shippingCost: number; headerMenu: Array<{ label: string; url: string }>;
+  taxPercentage: number; shippingCost: number; headerMenu: Array<{ label: string; labelAr?: string; url: string }>;
   isMaintenanceMode: boolean; urlFacebook: string; urlInstagram: string; urlTwitter: string;
   urlTiktok: string; urlLinkedin: string; urlPolicy: string; urlTerms: string; urlSupport: string;
   urlShippingReturnsPolicy: string; urlAbout: string; urlContact: string; urlFAQ: string; urlTracking: string;

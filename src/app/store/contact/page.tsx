@@ -7,8 +7,8 @@ import { useState } from "react";
 
 export default function ContactPage() {
   const { settings, theme } = useStore();
-  const { t } = useLanguage();
-  const storeName = settings.nameStore || "My Store";
+  const { t, locale } = useLanguage();
+  const storeName = (locale === "ar" ? settings.nameStoreAr || settings.nameStore : settings.nameStore) || "My Store";
   const [submitted, setSubmitted] = useState(false);
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12">

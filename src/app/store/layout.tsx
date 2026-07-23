@@ -142,7 +142,7 @@ function ThemeSwitcher() {
   };
 
   return (
-    <div ref={ref} className="fixed bottom-6 z-[100] flex flex-col gap-3" style={{ [dir === "rtl" ? "left" : "right"]: "1.5rem", [dir === "rtl" ? "right" : "left"]: "auto", alignItems: dir === "rtl" ? "flex-start" : "flex-end" }}>
+    <div ref={ref} className="fixed bottom-6 z-[100] flex flex-col gap-3" style={{ right: "1.5rem", left: "auto", alignItems: "flex-end" }}>
       {open && (
         <div className="shadow-2xl border overflow-hidden w-80" style={{ background: theme.cardBg, borderColor: theme.border, borderRadius: br }}>
           {/* Tabs */}
@@ -235,7 +235,7 @@ function LanguageSwitcher() {
   }, [open]);
 
   return (
-    <div ref={ref} className="fixed bottom-6 z-[100] flex flex-col gap-3" style={{ [dir === "rtl" ? "right" : "left"]: "1.5rem", [dir === "rtl" ? "left" : "right"]: "auto", alignItems: dir === "rtl" ? "flex-end" : "flex-start" }}>
+    <div ref={ref} className="fixed bottom-6 z-[100] flex flex-col gap-3" style={{ left: "1.5rem", right: "auto", alignItems: "flex-start" }}>
       {open && (
         <div className="shadow-2xl border overflow-hidden w-44" style={{ background: storeTheme.cardBg, borderColor: storeTheme.border, borderRadius: storeTheme.borderRadius }}>
           <div className="p-2">
@@ -262,11 +262,11 @@ function LanguageSwitcher() {
 
 function StoreShell({ children }: { children: React.ReactNode }) {
   const { settings, loading, theme, cartCount, setShowCart, setShowWishlist, wishlist, searchQuery, setSearchQuery, activeCoupon, customerUser, customerLoading, logoutCustomer } = useStore();
-  const { t, dir } = useLanguage();
+  const { t, dir, locale } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
-  const storeName = settings.nameStore || "My Store";
-  const storeDesc = settings.descriptionStore || "Welcome to our store";
+  const storeName = (locale === "ar" ? settings.nameStoreAr || settings.nameStore : settings.nameStore) || "My Store";
+  const storeDesc = (locale === "ar" ? settings.descriptionStoreAr || settings.descriptionStore : settings.descriptionStore) || "Welcome to our store";
   const menu = settings.headerMenu || [];
   const searchRef = useRef<HTMLInputElement>(null);
   const br = theme.borderRadius;
@@ -431,7 +431,7 @@ function StoreShell({ children }: { children: React.ReactNode }) {
             <div>
               <h4 className="text-[10px] font-bold uppercase tracking-[0.15em] mb-4" style={{ color: theme.footerTextColor }}>{t("footer.links")}</h4>
               <div className="space-y-2.5">
-                {menu.length > 0 ? menu.map((item, i) => <Link key={i} href={item.url} className="block text-xs transition-all duration-300 hover:translate-x-1" style={{ color: theme.footerMutedText || theme.footerTextColor }}>{item.label}</Link>) : (
+                {menu.length > 0 ? menu.map((item, i) => <Link key={i} href={item.url} className="block text-xs transition-all duration-300 hover:translate-x-1" style={{ color: theme.footerMutedText || theme.footerTextColor }}>{locale === "ar" ? (item.labelAr || item.label) : item.label}</Link>) : (
                   <><Link href="/store" className="block text-xs transition-all duration-300 hover:translate-x-1" style={{ color: theme.footerMutedText || theme.footerTextColor }}>{t("footer.home")}</Link><Link href="/store/about" className="block text-xs transition-all duration-300 hover:translate-x-1" style={{ color: theme.footerMutedText || theme.footerTextColor }}>{t("footer.about")}</Link><Link href="/store/contact" className="block text-xs transition-all duration-300 hover:translate-x-1" style={{ color: theme.footerMutedText || theme.footerTextColor }}>{t("footer.contact")}</Link></>
                 )}
               </div>
@@ -456,7 +456,7 @@ function StoreShell({ children }: { children: React.ReactNode }) {
             </div>
           </div>
           <div className="border-t pt-6 flex flex-col sm:flex-row items-center justify-between gap-3" style={{ borderColor: `${theme.footerTextColor}15` }}>
-            <p className="text-[10px]" style={{ color: theme.footerMutedText || theme.footerTextColor }}>&copy; {new Date().getFullYear()} {storeName}. {t("footer.allRightsReserved")}</p>
+            <p className="text-[10px]" style={{ color: theme.footerMutedText || theme.footerTextColor }}>&copy; {new Date().getFullYear()} {storeName}. {t("footer.copyright")}</p>
             <div className="flex gap-3 text-[10px]" style={{ color: theme.footerMutedText || theme.footerTextColor }}>
               {settings.acceptCard && <span className="px-2.5 py-1 font-medium" style={{ borderRadius: "9999px", background: `${theme.globalColor}12` }}>{t("footer.card")}</span>}
               {settings.acceptPaypal && <span className="px-2.5 py-1 font-medium" style={{ borderRadius: "9999px", background: `${theme.globalColor}12` }}>{t("footer.paypal")}</span>}

@@ -138,7 +138,7 @@ function DefaultProductCard({ product, theme, addToCart, toggleWishlist, isWishl
       <div className="p-3.5 flex-1 flex flex-col">
         <p className="text-[9px] font-semibold uppercase tracking-[0.15em] mb-1" style={{ color: theme.globalColor }}>{displayCategory}</p>
         <h3 className="text-sm font-medium mb-1 line-clamp-1" style={{ color: theme.textColor }}>{displayTitle}</h3>
-        <p className="text-[11px] line-clamp-2 mb-3 leading-relaxed flex-1" style={{ color: theme.mutedText }}>{product.description}</p>
+        <p className="text-[11px] line-clamp-2 mb-3 leading-relaxed flex-1" style={{ color: theme.mutedText }}>{locale === "ar" && product.descriptionAr ? product.descriptionAr : product.description}</p>
         <div className="flex items-end justify-between gap-2">
           <div>
             <span className="text-base font-semibold" style={{ color: theme.globalColor }}>${product.price.toFixed(2)}</span>
@@ -496,10 +496,10 @@ function CategoryStoreSection({ catId, addToCart }: { catId: string; addToCart: 
 
 export default function StoreHome() {
   const { products, theme, settings, activeCoupon, addToCart, searchQuery, toggleWishlist, isWishlisted, activeStoreCategory, activeCategoryData } = useStore();
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
   const [activeSlide, setActiveSlide] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const storeName = settings.nameStore || "My Store";
+  const storeName = (locale === "ar" ? settings.nameStoreAr || settings.nameStore : settings.nameStore) || "My Store";
   const br = theme.borderRadius;
   const timerRef = React.useRef<NodeJS.Timeout | null>(null);
 

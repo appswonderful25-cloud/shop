@@ -150,6 +150,7 @@ const en: Record<string, string> = {
   "theme.saving": "Saving...",
   "theme.saved": "Saved!",
   "theme.saveTheme": "Save Theme",
+  "theme.layout": "Layout",
 
   // ─── LOADING / MAINTENANCE ───
   "loading": "Loading...",
@@ -1011,6 +1012,7 @@ const en: Record<string, string> = {
   "general.language": "Language",
   "general.english": "English",
   "general.arabic": "العربية",
+  "general.bilingual": "Bilingual",
   "general.theme": "Theme",
   "general.error": "Something went wrong",
 
@@ -1170,6 +1172,7 @@ const ar: Record<string, string> = {
   "theme.saving": "جارٍ الحفظ...",
   "theme.saved": "تم الحفظ!",
   "theme.saveTheme": "حفظ المظهر",
+  "theme.layout": "التخطيط",
 
   // ─── LOADING / MAINTENANCE ───
   "loading": "جارٍ التحميل...",
@@ -1413,7 +1416,7 @@ const ar: Record<string, string> = {
   "policy.s3": "3. مشاركة المعلومات",
   "policy.s3text": "لا نبيع أو نؤجر معلوماتك الشخصية لأطراف ثالثة. قد نشارك معلوماتك مع مزودي الخدمة الموثوقين الذين يساعدوننا في تشغيل متجرنا وإجراء الأعمال.",
   "policy.s4": "4. أمان البيانات",
-  "policy.s4text": "ن implement تدابير أمنية مناسبة لحماية معلوماتك الشخصية. ومع ذلك، فإن أي طريقة نقل عبر الإنترنت ليست آمنة بنسبة 100%.",
+  "policy.s4text": "نطبق تدابير أمنية مناسبة لحماية معلوماتك الشخصية. ومع ذلك، فإن أي طريقة نقل عبر الإنترنت ليست آمنة بنسبة 100%.",
   "policy.s5": "5. اتصل بنا",
   "policy.s5text": "إذا كانت لديك أسئلة حول سياسة الخصوصية هذه، يرجى الاتصال بنا على {email}.",
 
@@ -1491,7 +1494,7 @@ const ar: Record<string, string> = {
   // ─── DASHBOARD OVERVIEW ───
   "overview.monthlyTarget": "الهدف الشهري",
   "overview.viewMore": "عرض المزيد",
-  "overview.targetDesc": "الهدف الذي تทำงาน عليه.",
+  "overview.targetDesc": "الهدف الذي تعمل عليه.",
   "overview.earnToday": "لقد كسبت 3287$ اليوم، وهو أعلى من الشهر الماضي. واصل عملك الجيد!",
   "overview.target": "الهدف",
   "overview.revenue": "الإيرادات",
@@ -1523,8 +1526,6 @@ const ar: Record<string, string> = {
   "dashboardOrders.action": "الإجراء",
   "dashboardOrders.view": "عرض",
   "dashboardOrders.noOrders": "لم يتم العثور على طلبات",
-  "dashboardOrders.delivered": "تم التوصيل",
-  "dashboardOrders.inTransit": "قيد الشحن",
   "dashboardOrders.noOrdersDesc": "لا توجد طلبات تطابق الفلاتر الخاصة بك.",
   "dashboardOrders.details": "تفاصيل الطلب",
   "dashboardOrders.orderIdLabel": "رقم الطلب:",
@@ -1535,7 +1536,6 @@ const ar: Record<string, string> = {
   "dashboardOrders.paymentStatus": "حالة الدفع:",
   "dashboardOrders.shippingAddress": "عنوان الشحن:",
   "dashboardOrders.close": "إغلاق",
-  "dashboardOrders.inTransit": "قيد الشحن",
 
   // ─── DASHBOARD PRODUCTS ───
   "dashboardProducts.title": "المنتجات",
@@ -1747,7 +1747,7 @@ const ar: Record<string, string> = {
   "dashboardNotifications.unread": "غير مقروء",
   "dashboardNotifications.markAllRead": "تحديد الكل كمقروء",
   "dashboardNotifications.noNotifications": "لا توجد إشعارات",
-  "dashboardNotifications.allCaughtUp": "لقد طُوِّرت جميع الإشعارات!",
+  "dashboardNotifications.allCaughtUp": "تم عرض جميع الإشعارات!",
   "dashboardNotifications.settings": "إعدادات الإشعارات",
 
   // ─── DASHBOARD WALLET ───

@@ -86,6 +86,7 @@ export default function ProductDetailPage() {
   const product = useMemo(() => products.find(p => p.id === productId), [products, productId]);
   const displayTitle = locale === "ar" && product?.titleAr ? product.titleAr : product?.title;
   const displayCategory = locale === "ar" && product?.productCategoryAr ? product.productCategoryAr : product?.productCategory;
+  const displayDescription = locale === "ar" && product?.descriptionAr ? product.descriptionAr : product?.description;
   const relatedProducts = useMemo(() => {
     if (!product) return [];
     return products.filter(p => p.id !== product.id && p.productCategory === product.productCategory).slice(0, 6);
@@ -184,7 +185,7 @@ export default function ProductDetailPage() {
             </span>
           </div>
 
-          <p className="text-sm leading-relaxed mb-6" style={{ color: theme.mutedText }}>{product.description}</p>
+          <p className="text-sm leading-relaxed mb-6" style={{ color: theme.mutedText }}>{displayDescription}</p>
 
           <div className="flex items-baseline gap-3 mb-6">
             <span className="text-3xl font-black" style={{ color: theme.globalColor }}>${product.price.toFixed(2)}</span>
@@ -283,7 +284,7 @@ export default function ProductDetailPage() {
             </div>
             <div>
               <h3 className="text-lg font-bold mb-4" style={{ color: theme.textColor }}>Description</h3>
-              <p className="text-sm leading-relaxed" style={{ color: theme.mutedText }}>{product.description}</p>
+              <p className="text-sm leading-relaxed" style={{ color: theme.mutedText }}>{displayDescription}</p>
               <div className="mt-6 p-4 border" style={{ borderColor: theme.border, borderRadius: br, background: `${theme.globalColor}05` }}>
                 <p className="text-xs font-bold mb-1" style={{ color: theme.textColor }}>Sku: {`SKU-${String(product.id).padStart(6, "0")}`}</p>
                 <p className="text-xs" style={{ color: theme.mutedText }}>Category: {product.productCategory}</p>
