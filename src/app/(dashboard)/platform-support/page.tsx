@@ -5,6 +5,7 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { createContext } from "react";
 import { Loader2, AlertTriangle, RotateCw } from "lucide-react";
 import { supportFetch } from "./lib/support-api";
+import { useLanguage } from "@/app/store/LanguageContext";
 
 export interface SupportUser {
   id: number;
@@ -42,6 +43,7 @@ export const DataContext = createContext<{
 }>({ data: [], setData: () => {}, loadData: async () => {} });
 
 const PlatformSupport = () => {
+  const { t, dir } = useLanguage();
   const [data, setData] = useState<SupportTicket[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -73,7 +75,7 @@ const PlatformSupport = () => {
 
   return (
     <DataContext.Provider value={{ data, setData, loadData }}>
-      <div className="w-full max-w-5xl mx-auto space-y-6 text-left relative" dir="ltr">
+      <div className="w-full max-w-5xl mx-auto space-y-6 text-start relative" dir={dir}>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-zinc-800/80 pb-5">
           <div>
             <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Platform Support</h1>

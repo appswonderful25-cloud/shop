@@ -131,4 +131,59 @@
   button {
     cursor: pointer;
   }
+
+  /* RTL Support - Arabic alignment to right */
+  html[dir="rtl"] body {
+    font-family: var(--font-tajawal), var(--font-inter), system-ui, sans-serif;
+    text-align: right;
+  }
+  html[dir="rtl"] {
+    direction: rtl;
+  }
+  html[dir="rtl"] .text-left {
+    text-align: right !important;
+  }
+  html[dir="rtl"] .text-right {
+    text-align: left !important;
+  }
+  html[dir="rtl"] input,
+  html[dir="rtl"] textarea,
+  html[dir="rtl"] select {
+    text-align: right;
+    direction: rtl;
+  }
+  html[dir="rtl"] input::placeholder,
+  html[dir="rtl"] textarea::placeholder {
+    text-align: right;
+  }
+  /* Ensure flex row reversal handling for some layouts - use logical properties */
+  html[dir="rtl"] .rtl\:flex-row-reverse {
+    flex-direction: row-reverse;
+  }
+  /* For tables, ensure headers align right */
+  html[dir="rtl"] table {
+    direction: rtl;
+  }
+  html[dir="rtl"] th,
+  html[dir="rtl"] td {
+    text-align: right;
+  }
+  /* Icons and gaps stay logical */
+  html[dir="rtl"] .space-x-reverse > :not([hidden]) ~ :not([hidden]) {
+    --tw-space-x-reverse: 1;
+  }
+
+  /* Utility: text-start respects dir, ensure it's used */
+  .text-start {
+    text-align: start;
+  }
+  .text-end {
+    text-align: end;
+  }
+
+  /* Arabic font improvements */
+  [lang="ar"] {
+    font-family: var(--font-tajawal), system-ui, sans-serif;
+    letter-spacing: 0;
+  }
 }

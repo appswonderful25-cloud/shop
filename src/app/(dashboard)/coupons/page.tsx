@@ -1,5 +1,7 @@
 "use client";
 
+import { useLanguage } from "@/app/store/LanguageContext";
+
 import { useState,useEffect, useRef, useCallback } from "react";
 import toast from "react-hot-toast";
 import { Ticket, Plus, Tag, Calendar, MoreHorizontal, Trash2 } from "lucide-react";
@@ -7,10 +9,11 @@ import CreateCouponModal from "./CreateCouponModal";
 import { API_CONFIG, API_ENDPOINTS } from "@/lib/api-config";
 
 export default function Coupons() {
+  const { t, dir } = useLanguage();
+
   const [couponsData, setCouponsData] = useState<any[]>([]);
   const [loading,setLoading] = useState<boolean>(true);
   const isLoadingRef = useRef(false);
-  const toastIdRef = useRef<string | null>(null);
 
   const [activeDropdownId, setActiveDropdownId] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -35,19 +38,15 @@ export default function Coupons() {
     } catch (err) {
       console.error("Failed to fetch coupons data:", err);
       setLoading(false);
-      toast.error("Failed to fetch coupons data. Please try again! ❌");
+      toast.error(t("coupons.deleteFailed"));
     } finally {
       isLoadingRef.current = false;
     }
-  }, []);
-    
-    
-    
-  
+  }, [t]);
 
   useEffect(() => {
   fetchData();
-  }, []);
+  }, [fetchData]);
 
 const handleAddCoupon = async(code: string, discount: string, type: string, expiry: string) => {
   const newCoupon = {
@@ -61,7 +60,7 @@ const handleAddCoupon = async(code: string, discount: string, type: string, expi
   const newCoupon2 = { data: newCoupon };
   const token = document.cookie.split('; ').find(row => row.startsWith('accessToken='))?.split('=')[1] || '';
   
-  const loading = toast.loading("Processing and adding coupon... 🚀");
+  const loadingToast = toast.loading(t("coupons.processing"));
   
   try {
     const res = await fetch(`${API_CONFIG.STRAPI_BASE_URL}${API_ENDPOINTS.COUPONS.CREATE}`, {
@@ -79,19 +78,19 @@ const handleAddCoupon = async(code: string, discount: string, type: string, expi
     }
     
     setCouponsData([...couponsData, data.data]);
-    toast.success("Coupon added successfully! 🎉", { id: loading });
+    toast.success(t("coupons.addedSuccess"), { id: loadingToast });
     await fetchData();
     setIsModalOpen(false);
   } catch (error) {
     console.error("Failed to add coupon:", error);
-    toast.error("Failed to add coupon. Please try again! ❌", { id: loading });
+    toast.error(t("coupons.addFailed"), { id: loadingToast });
   }
 }
 
 const handleDeleteCoupon = async(id:string) => {
       const token = document.cookie.split('; ').find(row => row.startsWith('accessToken='))?.split('=')[1] || '';
       
-      const loading = toast.loading("Deleting coupon from server... 🗑️");
+      const loadingToast = toast.loading(t("coupons.deleting"));
       
       try {
         const res = await fetch(`${API_CONFIG.STRAPI_BASE_URL}${API_ENDPOINTS.COUPONS.BY_ID(id)}`, {
@@ -107,10 +106,10 @@ const handleDeleteCoupon = async(id:string) => {
         }
         
         setCouponsData(couponsData.filter(c => c.documentId !== id));
-        toast.success("Coupon deleted successfully! 🎉", { id: loading });
+        toast.success(t("coupons.deletedSuccess"), { id: loadingToast });
       } catch (error) {
         console.error("Failed to delete coupon:", error);
-        toast.error("Failed to delete coupon. Please try again! ❌", { id: loading });
+        toast.error(t("coupons.deleteFailed"), { id: loadingToast });
       }
 }
 
@@ -118,40 +117,40 @@ const handleDeleteCoupon = async(id:string) => {
     return <div className="flex flex-col items-center justify-center min-h-[400px] w-full gap-4">
       <div className="w-12 h-12 border-4 border-[#4f46e5] border-t-transparent rounded-full animate-spin"></div>
       <h2 className="text-xl font-semibold text-[#4f46e5] animate-pulse">
-        Loading coupons data, please wait... 🚀
+        {t("coupons.loading")}
       </h2>
     </div>
     }
 
   return (
-    <div className="w-full max-w-5xl mx-auto space-y-6 text-left relative" dir="ltr">
+    <div className="w-full max-w-5xl mx-auto space-y-6 text-start relative" dir={dir}>
       
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-zinc-800/80 pb-5">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5">
             <Ticket className="text-indigo-600 dark:text-indigo-400" size={26} />
-            Coupons & Discounts
+            {t("coupons.title")}
           </h1>
           <p className="text-sm text-slate-400 dark:text-zinc-500 mt-1">
-            Create, manage, and monitor discount codes to boost your store marketing and sales.
+            {t("coupons.desc")}
           </p>
         </div>
         
         <button onClick={() => setIsModalOpen(true)} className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition-all duration-200 shadow-sm active:scale-[0.98] shrink-0 cursor-pointer">
           <Plus size={16} />
-          Create Coupon
+          {t("coupons.create")}
         </button>
       </div>
 
       <div className="w-full bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800/80 rounded-2xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[600px] text-left border-collapse">
+          <table className="w-full min-w-[600px] text-start border-collapse">
             <thead>
               <tr className="border-b border-slate-100 dark:border-zinc-800/80 bg-slate-50/50 dark:bg-zinc-900/50 text-xs font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-wider">
-                <th className="p-4">Coupon Code</th>
-                <th className="p-4">Discount</th>
-                <th className="p-4">Expiry Date</th>
-                <th className="p-4">Status</th>
+                <th className="p-4">{t("coupons.couponCode")}</th>
+                <th className="p-4">{t("coupons.discount")}</th>
+                <th className="p-4">{t("coupons.expiryDate")}</th>
+                <th className="p-4">{t("coupons.status")}</th>
                 <th className="p-4 w-16"></th>
               </tr>
             </thead>
@@ -191,7 +190,7 @@ const handleDeleteCoupon = async(id:string) => {
                         }
                       `}>
                         <span className={`w-1.5 h-1.5 rounded-full ${coupon.statusCoupon === true ? "bg-emerald-500" : "bg-rose-500"}`} />
-                        {coupon.statusCoupon==true ? "Active" : "Expired"}
+                        {coupon.statusCoupon==true ? t("coupons.active") : t("coupons.expired")}
                       </span>
                     </td>
 
@@ -202,10 +201,10 @@ const handleDeleteCoupon = async(id:string) => {
                       {isDropdownOpen && (
                         <>
                           <div className="fixed inset-0 z-40" onClick={() => setActiveDropdownId(null)} />
-                          <div className="absolute right-4 mt-1 w-36 bg-white dark:bg-zinc-800 rounded-xl shadow-lg border border-slate-100 dark:border-zinc-700/50 py-1.5 z-50 animate-scale-in text-left">
-                            <button onClick={() => { handleDeleteCoupon(coupon.documentId); setActiveDropdownId(null); }} className="w-full text-left px-3.5 py-2 text-xs font-bold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/20 transition-colors flex items-center gap-2 cursor-pointer">
+                          <div className={`absolute ${dir === "rtl" ? "left-4" : "right-4"} mt-1 w-36 bg-white dark:bg-zinc-800 rounded-xl shadow-lg border border-slate-100 dark:border-zinc-700/50 py-1.5 z-50 animate-scale-in text-start`}>
+                            <button onClick={() => { handleDeleteCoupon(coupon.documentId); setActiveDropdownId(null); }} className="w-full text-start px-3.5 py-2 text-xs font-bold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/20 transition-colors flex items-center gap-2 cursor-pointer">
                               <Trash2 size={14} />
-                              Delete Code
+                              {t("coupons.deleteCode")}
                             </button>
                           </div>
                         </>

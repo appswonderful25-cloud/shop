@@ -1,10 +1,13 @@
 "use client";
 
+import { useLanguage } from "@/app/store/LanguageContext";
+
 import { useState, useEffect, useCallback, useRef } from "react";
 import { RefreshCw, Eye, Loader2, AlertTriangle, RotateCw, Package } from "lucide-react";
 import ReturnDetailsModal from "./ReturnDetailsModal";
 import toast from "react-hot-toast";
 import { API_CONFIG, API_ENDPOINTS } from "@/lib/api-config";
+import { useDBTranslation } from "@/lib/translate-db";
 
 function getToken(): string {
   if (typeof document === 'undefined') return '';
@@ -12,6 +15,9 @@ function getToken(): string {
 }
 
 export default function Returns() {
+  const { t, dir } = useLanguage();
+  const { translateReturnStatus } = useDBTranslation();
+
   const [returnsData, setReturnsData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -39,12 +45,12 @@ export default function Returns() {
       setReturnsData(data.data || []);
     } catch (err: any) {
       console.error(err);
-      setLoadError(err?.message || "Failed to fetch returns data.");
+      setLoadError(err?.message || t("returns.loading"));
     } finally {
       setLoading(false);
       isLoadingRef.current = false;
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     loadReturns();
@@ -67,10 +73,10 @@ export default function Returns() {
           item.documentId === id ? { ...item, statusReturn: newStatus } : item
         )
       );
-      toast.success("Status updated successfully!");
+      toast.success(t("common.save"));
     } catch (err) {
       console.error("Failed to update status:", err);
-      toast.error("Failed to update status. Please try again.");
+      toast.error(t("general.error"));
     }
   };
 
@@ -81,15 +87,15 @@ export default function Returns() {
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto space-y-6 text-left relative" dir="ltr">
+    <div className="w-full max-w-5xl mx-auto space-y-6 text-start relative" dir={dir}>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-zinc-800/80 pb-5">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5">
             <RefreshCw className="text-indigo-600 dark:text-indigo-400" size={24} />
-            Returns & Refunds
+            {t("returns.title")}
           </h1>
           <p className="text-sm text-slate-400 dark:text-zinc-500 mt-1">
-            Track customer product returns, review return reasons, check ownership days, and manage refund statuses.
+            {t("returns.desc")}
           </p>
         </div>
       </div>
@@ -97,7 +103,7 @@ export default function Returns() {
       {loading && (
         <div className="flex flex-col items-center justify-center gap-3 text-sm text-slate-400 dark:text-zinc-500 py-16">
           <Loader2 size={20} className="animate-spin" />
-          <span>Loading returns data...</span>
+          <span>{t("returns.loading")}</span>
         </div>
       )}
 
@@ -109,7 +115,7 @@ export default function Returns() {
             onClick={loadReturns}
             className="flex items-center gap-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 hover:bg-indigo-100 dark:bg-zinc-800 dark:hover:bg-zinc-700 px-3 py-1.5 rounded-xl transition-all cursor-pointer"
           >
-            <RotateCw size={13} /> Retry
+            <RotateCw size={13} /> {t("common.retry")}
           </button>
         </div>
       )}
@@ -117,22 +123,22 @@ export default function Returns() {
       {!loading && !loadError && returnsData.length === 0 && (
         <div className="flex flex-col items-center justify-center gap-3 text-sm text-slate-400 dark:text-zinc-500 py-16">
           <Package size={24} />
-          <span>No return requests found.</span>
+          <span>{t("returns.noReturns")}</span>
         </div>
       )}
 
       {!loading && !loadError && returnsData.length > 0 && (
         <div className="w-full bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800/80 rounded-2xl shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[700px] text-left border-collapse">
+            <table className="w-full min-w-[700px] text-start border-collapse">
               <thead>
                 <tr className="border-b border-slate-100 dark:border-zinc-800/80 bg-slate-50/50 dark:bg-zinc-900/50 text-xs font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-wider">
-                  <th className="p-4">Order Info</th>
-                  <th className="p-4">Customer</th>
-                  <th className="p-4">Product Name</th>
-                  <th className="p-4">Days Owned</th>
-                  <th className="p-4">Status</th>
-                  <th className="p-4 w-28">Action</th>
+                  <th className="p-4">{t("returns.orderId")}</th>
+                  <th className="p-4">{t("returns.customer")}</th>
+                  <th className="p-4">{t("dashboardProducts.product")}</th>
+                  <th className="p-4">{t("returns.date")}</th>
+                  <th className="p-4">{t("returns.status")}</th>
+                  <th className="p-4 w-28">{t("returns.action")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-zinc-800/60">
@@ -154,7 +160,7 @@ export default function Returns() {
                       </td>
                       <td className="p-4">
                         <span className={`inline-flex items-center gap-1 text-xs font-bold ${days > 14 ? "text-amber-500" : "text-slate-500 dark:text-zinc-400"}`}>
-                          {days} Days
+                          {days} {t("returns.date")}
                         </span>
                       </td>
                       <td className="p-4">
@@ -166,7 +172,7 @@ export default function Returns() {
                               : "bg-rose-50 text-rose-600 dark:bg-rose-950/20 dark:text-rose-400"
                         }`}>
                           <span className={`w-1.5 h-1.5 rounded-full ${item.statusReturn === "returned" ? "bg-emerald-500" : item.statusReturn === "pending" ? "bg-amber-500" : "bg-rose-500"}`} />
-                          {item.statusReturn === "returned" ? "Returned" : item.statusReturn === "pending" ? "Pending" : "Rejected"}
+                          {translateReturnStatus(item.statusReturn)}
                         </span>
                       </td>
                       <td className="p-4">
@@ -175,7 +181,7 @@ export default function Returns() {
                           className="flex items-center gap-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 hover:bg-indigo-100 dark:bg-zinc-800 dark:hover:bg-zinc-700 px-3 py-1.5 rounded-xl transition-all cursor-pointer active:scale-95"
                         >
                           <Eye size={14} />
-                          Review
+                          {t("returns.viewDetails")}
                         </button>
                       </td>
                     </tr>

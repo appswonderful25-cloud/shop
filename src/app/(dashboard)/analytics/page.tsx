@@ -1,5 +1,6 @@
 "use client";
 
+import { useLanguage } from "@/app/store/LanguageContext";
 import { useState, useMemo } from "react";
 import { BarChart3, Calendar, Layers } from "lucide-react";
 import AnalyticsCards from "./AnalyticsCards";
@@ -7,10 +8,14 @@ import AnalyticsCharts from "./AnalyticsCharts";
 import VisitorsAnalytics from "./VisitorsAnalytics";
 import DateRangeModal from "./DateRangeModal";
 import { AnalyticsFilter } from "./filter-utils";
+import { useDBTranslation } from "@/lib/translate-db";
 
 export default function Analytics() {
+  const { t, dir } = useLanguage();
+  const { translateCategory } = useDBTranslation();
+
   const [timeframe, setTimeframe] = useState("all_time");
-  const [dateDisplay, setDateDisplay] = useState("Select Date");
+  const [dateDisplay, setDateDisplay] = useState(t("analytics.selectDate"));
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("all");
 
@@ -32,22 +37,37 @@ export default function Analytics() {
   }), [timeframe, dateRange, selectedCategory]);
 
   const tabs = [
-    { id: "daily", label: "Today" },
-    { id: "monthly", label: "Monthly" },
-    { id: "yearly", label: "Yearly" },
-    { id: "all_time", label: "All Time" },
+    { id: "daily", label: t("analytics.today") },
+    { id: "monthly", label: t("analytics.monthly") },
+    { id: "yearly", label: t("analytics.yearly") },
+    { id: "all_time", label: t("analytics.allTime") },
+  ];
+
+  const categories = [
+    { value: "all", label: t("analytics.allCategories") },
+    { value: "Electronics", label: translateCategory("Electronics") },
+    { value: "Clothing", label: translateCategory("Clothing & Apparel") },
+    { value: "Home & Kitchen", label: translateCategory("Home & Kitchen") },
+    { value: "Books", label: translateCategory("Books & Media") },
+    { value: "Sports", label: translateCategory("Sports & Outdoors") },
+    { value: "Beauty", label: translateCategory("Beauty & Personal Care") },
+    { value: "Toys", label: translateCategory("Toys & Games") },
+    { value: "Automotive", label: translateCategory("Automotive") },
+    { value: "Garden", label: translateCategory("Garden & Outdoor") },
+    { value: "Health", label: translateCategory("Health & Wellness") },
+    { value: "Pet", label: translateCategory("Pet Supplies") },
   ];
 
   return (
-    <div className="w-full max-w-5xl mx-auto space-y-8 text-left relative" dir="ltr">
+    <div className="w-full max-w-5xl mx-auto space-y-8 text-start relative" dir={dir}>
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 dark:border-zinc-800/80 pb-5">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5">
             <BarChart3 className="text-indigo-600 dark:text-indigo-400" size={26} />
-            Store Analytics
+            {t("analytics.storeAnalytics")}
           </h1>
           <p className="text-sm text-slate-400 dark:text-zinc-500 mt-1">
-            Analyze revenue growth, monitor sales, and evaluate conversion rates.
+            {t("analytics.analyzeDesc")}
           </p>
         </div>
 
@@ -56,7 +76,7 @@ export default function Analytics() {
             {tabs.map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => { setTimeframe(tab.id); setDateDisplay("Select Date"); }}
+                onClick={() => { setTimeframe(tab.id); setDateDisplay(t("analytics.selectDate")); }}
                 className={`px-4 py-2 text-xs font-bold rounded-xl transition-all duration-200 cursor-pointer select-none
                   ${timeframe === tab.id
                     ? "bg-white text-slate-900 shadow-sm border border-slate-200/50 dark:bg-zinc-900 dark:text-white dark:border-zinc-800"
@@ -87,18 +107,9 @@ export default function Analytics() {
               onChange={(e) => setSelectedCategory(e.target.value)}
               className="bg-transparent focus:outline-none cursor-pointer w-full text-slate-900 dark:text-white border-none pr-6 font-bold"
             >
-              <option value="all">All Categories</option>
-              <option value="Electronics">Electronics</option>
-              <option value="Clothing">Clothing & Apparel</option>
-              <option value="Home & Kitchen">Home & Kitchen</option>
-              <option value="Books">Books & Media</option>
-              <option value="Sports">Sports & Outdoors</option>
-              <option value="Beauty">Beauty & Personal Care</option>
-              <option value="Toys">Toys & Games</option>
-              <option value="Automotive">Automotive</option>
-              <option value="Garden">Garden & Outdoor</option>
-              <option value="Health">Health & Wellness</option>
-              <option value="Pet">Pet Supplies</option>
+              {categories.map((c) => (
+                <option key={c.value} value={c.value}>{c.label}</option>
+              ))}
             </select>
           </div>
         </div>

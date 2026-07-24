@@ -1,12 +1,18 @@
 "use client";
 
+import { useLanguage } from "@/app/store/LanguageContext";
+
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Wallet as WalletIcon, ArrowUpRight, Plus, CreditCard, Landmark, CheckCircle2, AlertCircle, Loader2, AlertTriangle, RotateCw } from "lucide-react";
 import { FaPaypal } from "react-icons/fa6";
 import ConnectAccountModal from "./ConnectAccountModal";
 import { API_CONFIG } from "@/lib/api-config";
+import { useDBTranslation } from "@/lib/translate-db";
 
 export default function Wallet() {
+  const { t, dir } = useLanguage();
+  const { translateWalletStatus } = useDBTranslation();
+
   const [balance, setBalance] = useState(0);
   const [totalEarnings, setTotalEarnings] = useState(0);
   const [pendingClearance, setPendingClearance] = useState(0);
@@ -54,16 +60,16 @@ export default function Wallet() {
       }
     } catch (err: any) {
       console.error("Failed to fetch wallet data:", err);
-      setLoadError(err?.message || "Failed to fetch wallet data.");
+      setLoadError(err?.message || t("wallet.loading"));
     } finally {
       setLoading(false);
       isLoadingRef.current = false;
     }
-  }, [linkedAccounts.length, selectedMethod]);
+  }, [linkedAccounts.length, selectedMethod, t]);
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
 
   const handleWithdraw = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,12 +78,12 @@ export default function Wallet() {
 
     const amount = parseFloat(withdrawAmount);
     if (isNaN(amount) || amount <= 0) {
-      setErrorMessage("Please enter a valid payout amount.");
+      setErrorMessage(t("wallet.invalidAmount"));
       return;
     }
 
     if (amount > balance) {
-      setErrorMessage("Insufficient funds. You cannot withdraw more than your available balance.");
+      setErrorMessage(t("wallet.insufficient"));
       return;
     }
 
@@ -85,7 +91,7 @@ export default function Wallet() {
       payoutId: `PAY-${String(Math.floor(Math.random() * 900) + 100)}`,
       date: new Date().toISOString().split('T')[0],
       amount: amount.toFixed(2),
-      method: selectedMethod || 'Direct Payout',
+      method: selectedMethod || t("wallet.directPayoutShort"),
       status: "success",
     };
 
@@ -107,18 +113,18 @@ export default function Wallet() {
     setBalance(newBalance);
     setTransactions(updatedHistory);
     setWithdrawAmount("");
-    setSuccessMessage(`Successfully processed payout of $${amount.toFixed(2)}!`);
+    setSuccessMessage(t("wallet.processed", { amount: amount.toFixed(2) } as any));
   };
 
   const handleConnectAccount = async (type: string, name: string, number: string) => {
     const isPaypal = type === "PaypalAccount" || type === "PayPal";
     const display = isPaypal
-      ? `PayPal (${number})`
+      ? t("wallet.paypalParen", { email: number } as any)
       : type === "Visa"
-        ? `Visa ending in ${number.slice(-4)}`
-        : `Bank Account (••••${number.slice(-4)})`;
+        ? t("wallet.visaEnding", { last4: number.slice(-4) } as any)
+        : t("wallet.bankEnding", { last4: number.slice(-4) } as any);
 
-    const bankName = isPaypal ? "PayPal" : type === "Visa" ? "Visa Card" : "Bank Account";
+    const bankName = isPaypal ? t("wallet.paypal") : type === "Visa" ? t("wallet.visaCard") : t("wallet.bankAccount");
     const newAccount = { id: Date.now(), type: isPaypal ? "PayPal" : type, name, display, bankName, number };
     const updatedAccounts = [...linkedAccounts, newAccount];
     setLinkedAccounts(updatedAccounts);
@@ -144,16 +150,16 @@ export default function Wallet() {
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto space-y-8 text-left relative" dir="ltr">
+    <div className="w-full max-w-5xl mx-auto space-y-8 text-start relative" dir={dir}>
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-zinc-800/80 pb-5">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5">
             <WalletIcon className="text-indigo-600 dark:text-indigo-400" size={26} />
-            Payouts & Wallet
+            {t("wallet.title")}
           </h1>
           <p className="text-sm text-slate-400 dark:text-zinc-500 mt-1">
-            Monitor your available balance, link bank credentials, and request instant revenue payouts.
+            {t("wallet.desc")}
           </p>
         </div>
       </div>
@@ -161,7 +167,7 @@ export default function Wallet() {
       {loading && (
         <div className="flex flex-col items-center justify-center gap-3 text-sm text-slate-400 dark:text-zinc-500 py-16">
           <Loader2 size={20} className="animate-spin" />
-          <span>Loading wallet data...</span>
+          <span>{t("wallet.loading")}</span>
         </div>
       )}
 
@@ -170,7 +176,7 @@ export default function Wallet() {
           <AlertTriangle size={20} />
           <span>{loadError}</span>
           <button onClick={fetchData} className="flex items-center gap-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 hover:bg-indigo-100 dark:bg-zinc-800 dark:hover:bg-zinc-700 px-3 py-1.5 rounded-xl transition-all cursor-pointer">
-            <RotateCw size={13} /> Retry
+            <RotateCw size={13} /> {t("wallet.retry")}
           </button>
         </div>
       )}
@@ -183,11 +189,11 @@ export default function Wallet() {
               <div className="absolute -right-10 -top-10 w-40 h-40 bg-indigo-500/10 rounded-full blur-2xl" />
               <div className="flex justify-between items-start z-10">
                 <div>
-                  <span className="text-xs font-bold text-indigo-200/60 uppercase tracking-widest block">Available Balance</span>
+                  <span className="text-xs font-bold text-indigo-200/60 uppercase tracking-widest block">{t("wallet.availableBalance")}</span>
                   <span className="text-3xl font-extrabold tracking-tight mt-1.5 block">${balance.toFixed(2)}</span>
                 </div>
                 <div className="w-10 h-10 rounded-xl bg-white/10 backdrop-blur-md flex items-center justify-center font-bold text-xs">
-                  SaaS
+                  {t("wallet.saas")}
                 </div>
               </div>
               <div className="z-10">
@@ -195,7 +201,7 @@ export default function Wallet() {
                   {linkedAccounts.length > 0 ? `•••• •••• •••• ${linkedAccounts[0].number?.slice(-4) || '4242'}` : '•••• •••• •••• 4242'}
                 </span>
                 <div className="flex justify-between items-center mt-3">
-                  <span className="text-xs uppercase tracking-wider opacity-50">Store Wallet</span>
+                  <span className="text-xs uppercase tracking-wider opacity-50">{t("wallet.storeWallet")}</span>
                   <div className="flex -space-x-2">
                     <div className="w-6 h-6 rounded-full bg-rose-500/80" />
                     <div className="w-6 h-6 rounded-full bg-amber-500/80" />
@@ -205,12 +211,12 @@ export default function Wallet() {
             </div>
             <div className="md:col-span-2 bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800/80 rounded-3xl p-6 shadow-sm">
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-base font-bold text-slate-900 dark:text-white">Request Payout</h3>
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">{t("wallet.requestPayout")}</h3>
                 <button
                   onClick={() => setIsModalOpen(true)}
                   className="flex items-center gap-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-zinc-800 dark:hover:bg-zinc-700/50 px-3 py-2 rounded-xl transition-all cursor-pointer"
                 >
-                  <Plus size={14} /> Link Account
+                  <Plus size={14} /> {t("wallet.linkAccount")}
                 </button>
               </div>
 
@@ -248,7 +254,7 @@ export default function Wallet() {
               <form onSubmit={handleWithdraw} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-wider">Withdraw Destination</label>
+                    <label className="text-xs font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-wider">{t("wallet.withdrawDest")}</label>
                     <select
                       value={selectedMethod}
                       onChange={(e) => setSelectedMethod(e.target.value)}
@@ -257,13 +263,13 @@ export default function Wallet() {
                       {linkedAccounts.length > 0 ? linkedAccounts.map(acc => (
                         <option key={acc.id} value={acc.display}>{acc.display}</option>
                       )) : (
-                        <option value="Direct Payout">Direct Payout (no account linked)</option>
+                        <option value="Direct Payout">{t("wallet.directPayout")}</option>
                       )}
                     </select>
                   </div>
 
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-wider">Amount to Withdraw ($)</label>
+                    <label className="text-xs font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-wider">{t("wallet.amountWithdraw")}</label>
                     <div className="relative">
                       <input
                         type="number"
@@ -277,16 +283,16 @@ export default function Wallet() {
                       <button
                         type="button"
                         onClick={() => setWithdrawAmount(balance.toFixed(2))}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-extrabold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer"
+                        className={`absolute ${dir === "rtl" ? "left-3" : "right-3"} top-1/2 -translate-y-1/2 text-xs font-extrabold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer`}
                       >
-                        MAX
+                        {t("wallet.max")}
                       </button>
                     </div>
                   </div>
                 </div>
 
                 <button type="submit" className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold p-3.5 rounded-xl transition-all duration-200 shadow-sm active:scale-95 cursor-pointer">
-                  <ArrowUpRight size={16} /> Confirm Payout Request
+                  <ArrowUpRight size={16} /> {t("wallet.confirmPayout")}
                 </button>
               </form>
             </div>
@@ -294,22 +300,22 @@ export default function Wallet() {
 
           <div className="w-full bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800/80 rounded-2xl shadow-sm overflow-hidden">
             <div className="p-5 border-b border-slate-100 dark:border-zinc-800/80">
-              <h3 className="text-base font-bold text-slate-900 dark:text-white">Payout History</h3>
+              <h3 className="text-base font-bold text-slate-900 dark:text-white">{t("wallet.payoutHistory")}</h3>
             </div>
             {transactions.length === 0 ? (
               <div className="flex items-center justify-center gap-2 text-sm text-slate-400 dark:text-zinc-500 py-12">
-                No payout history yet.
+                {t("wallet.noHistory")}
               </div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full min-w-[600px] text-left border-collapse">
+                <table className="w-full min-w-[600px] text-start border-collapse">
                   <thead>
                     <tr className="border-b border-slate-100 dark:border-zinc-800/80 bg-slate-50/50 dark:bg-zinc-900/50 text-xs font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-wider">
-                      <th className="p-4">Transaction ID</th>
-                      <th className="p-4">Date & Time</th>
-                      <th className="p-4">Destination</th>
-                      <th className="p-4">Amount</th>
-                      <th className="p-4">Status</th>
+                      <th className="p-4">{t("wallet.transactionId")}</th>
+                      <th className="p-4">{t("wallet.dateTime")}</th>
+                      <th className="p-4">{t("wallet.destination")}</th>
+                      <th className="p-4">{t("wallet.amount")}</th>
+                      <th className="p-4">{t("wallet.status")}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-zinc-800/60">
@@ -322,7 +328,7 @@ export default function Wallet() {
                         <td className="p-4">
                           <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${tx.status === "success" ? "text-emerald-600 bg-emerald-50 dark:text-emerald-400" : tx.status === "failed" ? "text-rose-600 bg-rose-950/20 dark:text-rose-400" : "text-amber-600 bg-amber-50 dark:text-amber-400"}`}>
                             <span className={`w-1.5 h-1.5 rounded-full ${tx.status === "success" ? "bg-emerald-500" : tx.status === "failed" ? "bg-rose-500" : "bg-amber-500"}`} />
-                            {tx.status === "success" ? "Success" : tx.status === "failed" ? "Failed" : "Pending"}
+                            {translateWalletStatus(tx.status)}
                           </span>
                         </td>
                       </tr>

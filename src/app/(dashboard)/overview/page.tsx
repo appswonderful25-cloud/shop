@@ -110,13 +110,17 @@ export default function Overview() {
         <AlertTriangle size={24} className="text-red-500" />
         <span className="text-sm text-red-500">{error}</span>
         <button onClick={loadStats} className="flex items-center gap-1.5 text-xs font-bold text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-xl cursor-pointer">
-          <RotateCw size={13} /> Retry
+          <RotateCw size={13} /> {t("common.retry")}
         </button>
       </div>
     );
   }
 
   if (!stats) return null;
+
+  const monthKeys = ["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"];
+  const monthsTranslated = monthKeys.map(k => t(`month.${k}`));
+  const monthsEn = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
   const chartOptions: any = {
     chart: { type: "area", toolbar: { show: false }, fontFamily: "inherit" },
@@ -128,7 +132,7 @@ export default function Overview() {
     },
     grid: { borderColor: "#f1f5f9", strokeDashArray: 4, yaxis: { lines: { show: true } } },
     xaxis: {
-      categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+      categories: monthsTranslated,
       axisBorder: { show: false },
       axisTicks: { show: false },
       labels: { style: { colors: "#94a3b8", fontSize: "12px", fontWeight: 600 } },
@@ -137,12 +141,10 @@ export default function Overview() {
     tooltip: { theme: "light", y: { formatter: (val: number) => `$${val} USD` } },
   };
 
-  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-  const chartSeries = [{ name: "Revenue", data: months.map((m) => stats.monthRevenue[m] || 0) }];
+  const chartSeries = [{ name: t("overview.revenue"), data: monthsEn.map((m) => stats.monthRevenue[m] || 0) }];
 
   return (
-    <div className="w-full max-w-5xl mx-auto space-y-6 text-left relative" dir={dir}>
+    <div className="w-full max-w-5xl mx-auto space-y-6 text-start relative" dir={dir}>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-zinc-800/80 pb-5">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">{t("sidebar.overview")}</h1>
