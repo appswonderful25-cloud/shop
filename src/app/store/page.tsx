@@ -331,9 +331,9 @@ function CategoryProductGrid({ cat, addToCart }: { cat: StoreCategory; addToCart
             <div key={i} className="flex h-[280px] overflow-hidden border" style={{ borderColor: t.border, borderRadius: br }}>
               <div className="w-1/2 overflow-hidden"><img src={p.image} alt={locale === "ar" && p.titleAr ? p.titleAr : p.title} className="w-full h-full object-cover" /></div>
               <div className="w-1/2 p-6 flex flex-col justify-center">
-                <p className="text-[9px] font-semibold uppercase tracking-[0.15em] mb-2" style={{ color: t.primary }}>{p.category}</p>
+                <p className="text-[9px] font-semibold uppercase tracking-[0.15em] mb-2" style={{ color: t.primary }}>{locale === "ar" && (p as any).productCategoryAr ? (p as any).productCategoryAr : p.category}</p>
                 <h3 className="text-lg font-semibold mb-2" style={{ color: t.textColor, fontFamily: cat.fontFamily }}>{locale === "ar" && p.titleAr ? p.titleAr : p.title}</h3>
-                <p className="text-xs mb-4 line-clamp-3" style={{ color: t.mutedText }}>{p.description}</p>
+                <p className="text-xs mb-4 line-clamp-3" style={{ color: t.mutedText }}>{locale === "ar" && (p as any).descriptionAr ? (p as any).descriptionAr : p.description}</p>
                 <div className="flex items-center gap-3">
                   <span className="text-xl font-semibold" style={{ color: t.primary }}>${p.price.toFixed(2)}</span>
                   <button onClick={(e) => { e.preventDefault(); addToCart({ id: Math.random(), title: locale === "ar" && p.titleAr ? p.titleAr : p.title, price: p.price, count: 10, productCategory: p.category, statusProduct: "active" }); }}

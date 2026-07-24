@@ -73,7 +73,7 @@ function RelatedProductCard({ product, theme }: { product: Product; theme: any }
 
 export default function ProductDetailPage() {
   const { settings, theme, products, addToCart, toggleWishlist, isWishlisted } = useStore();
-  const { locale } = useLanguage();
+  const { t, locale } = useLanguage();
   const params = useParams();
   const productId = Number(params.id);
   const [selectedImage, setSelectedImage] = useState(0);
@@ -98,9 +98,9 @@ export default function ProductDetailPage() {
         <div className="w-20 h-20 mx-auto mb-5 rounded-2xl flex items-center justify-center" style={{ background: `${theme.globalColor}15`, borderRadius: br }}>
           <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={theme.globalColor} strokeWidth="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         </div>
-        <h2 className="text-2xl font-bold mb-2" style={{ color: theme.textColor }}>Product Not Found</h2>
-        <p className="text-sm mb-6" style={{ color: theme.mutedText }}>This product may have been removed or doesn&apos;t exist.</p>
-        <Link href="/store" className="inline-block px-6 py-3 text-sm font-bold text-white rounded-xl" style={{ background: theme.globalColor }}>Browse Products</Link>
+        <h2 className="text-2xl font-bold mb-2" style={{ color: theme.textColor }}>{t("product.notFound")}</h2>
+        <p className="text-sm mb-6" style={{ color: theme.mutedText }}>{t("product.notFoundDesc")}</p>
+        <Link href="/store" className="inline-block px-6 py-3 text-sm font-bold text-white rounded-xl" style={{ background: theme.globalColor }}>{t("product.browseProducts")}</Link>
       </div>
     );
   }
@@ -129,9 +129,9 @@ export default function ProductDetailPage() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-xs mb-6 flex-wrap" style={{ color: theme.mutedText }}>
-        <Link href="/store" className="hover:underline" style={{ color: theme.globalColor }}>Home</Link>
+        <Link href="/store" className="hover:underline" style={{ color: theme.globalColor }}>{t("product.home")}</Link>
         <span>/</span>
-        <Link href="/store" className="hover:underline" style={{ color: theme.globalColor }}>Shop</Link>
+        <Link href="/store" className="hover:underline" style={{ color: theme.globalColor }}>{t("product.shop")}</Link>
         <span>/</span>
         <span style={{ color: theme.textColor }} className="font-medium">{displayTitle}</span>
       </nav>
@@ -143,9 +143,9 @@ export default function ProductDetailPage() {
           <div className="relative rounded-2xl overflow-hidden mb-3 aspect-square" style={{ background: `${theme.globalColor}06`, borderRadius: br }}>
             <img src={allImages[selectedImage]} alt={displayTitle || ""} className="w-full h-full object-cover" />
             <div className="absolute top-4 left-4 flex flex-col gap-2">
-              {isDiscounted && <span className="px-3 py-1 text-xs font-bold text-white rounded-lg" style={{ background: "#EF4444" }}>-20% OFF</span>}
-              {product.statusProduct === "active" && <span className="px-3 py-1 text-xs font-bold text-white rounded-lg" style={{ background: theme.globalColor }}>In Stock</span>}
-              {isOut && <span className="px-3 py-1 text-xs font-bold text-white rounded-lg bg-gray-500">Sold Out</span>}
+              {isDiscounted && <span className="px-3 py-1 text-xs font-bold text-white rounded-lg" style={{ background: "#EF4444" }}>-20% {t("product.off")}</span>}
+              {product.statusProduct === "active" && <span className="px-3 py-1 text-xs font-bold text-white rounded-lg" style={{ background: theme.globalColor }}>{t("product.inStock")}</span>}
+              {isOut && <span className="px-3 py-1 text-xs font-bold text-white rounded-lg bg-gray-500">{t("product.soldOut")}</span>}
             </div>
             <button onClick={() => toggleWishlist(product.id)}
               className="absolute top-4 right-4 w-11 h-11 rounded-full flex items-center justify-center transition-all hover:scale-110 shadow-lg"
@@ -181,7 +181,7 @@ export default function ProductDetailPage() {
               <span className="text-xs ml-1" style={{ color: theme.mutedText }}>(4.0)</span>
             </div>
             <span className="text-xs px-2 py-0.5 rounded-full font-bold" style={{ background: isOut ? "#F3F4F6" : `${theme.globalColor}15`, color: isOut ? "#9CA3AF" : theme.globalColor }}>
-              {isOut ? "Out of Stock" : `${product.count} in stock`}
+              {isOut ? t("product.outOfStock") : t("product.inStockCount", { count: product.count })}
             </span>
           </div>
 
@@ -190,7 +190,7 @@ export default function ProductDetailPage() {
           <div className="flex items-baseline gap-3 mb-6">
             <span className="text-3xl font-black" style={{ color: theme.globalColor }}>${product.price.toFixed(2)}</span>
             {isDiscounted && <span className="text-lg line-through" style={{ color: theme.mutedText }}>${(product.price * 1.25).toFixed(2)}</span>}
-            {isDiscounted && <span className="text-xs font-bold px-2 py-0.5 rounded-full text-white bg-red-500">SAVE ${(product.price * 0.25).toFixed(2)}</span>}
+            {isDiscounted && <span className="text-xs font-bold px-2 py-0.5 rounded-full text-white bg-red-500">{t("product.save")} ${(product.price * 0.25).toFixed(2)}</span>}
           </div>
 
           {/* Variants */}
@@ -226,17 +226,17 @@ export default function ProductDetailPage() {
             <button onClick={handleAddToCart} disabled={isOut}
               className="flex-1 py-3.5 text-sm font-bold text-white transition-all shadow-lg disabled:opacity-40 disabled:cursor-not-allowed hover:scale-[1.01]"
               style={{ borderRadius: br, background: addedToCart ? "#22C55E" : isOut ? "#9CA3AF" : `linear-gradient(135deg, ${theme.globalColor}, ${theme.accentColor})` }}>
-              {addedToCart ? "Added to Cart!" : isOut ? "Sold Out" : `Add to Cart — $${(product.price * quantity).toFixed(2)}`}
+              {addedToCart ? t("product.addedToCart") : isOut ? t("product.soldOut") : `${t("product.addToCart")} — ${(product.price * quantity).toFixed(2)}`}
             </button>
           </div>
 
           {/* Quick Info */}
           <div className="grid grid-cols-2 gap-3">
             {[
-              { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8l4 2.5V16h-2"/></svg>, label: shippingCost === 0 ? "Free Shipping" : `Shipping $${shippingCost}`, sub: "On orders over $50" },
-              { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 105.64-8.36L1 10"/></svg>, label: "30-Day Returns", sub: "Easy refund policy" },
-              { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>, label: "Secure Payment", sub: "100% protected" },
-              { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>, label: "24/7 Support", sub: "Always here to help" },
+              { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8l4 2.5V16h-2"/></svg>, label: shippingCost === 0 ? t("product.freeShipping") : t("product.shippingCost", { cost: shippingCost }), sub: t("product.onOrdersOver") },
+              { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 105.64-8.36L1 10"/></svg>, label: t("product.returns30"), sub: t("product.easyRefund") },
+              { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>, label: t("product.securePayment"), sub: t("product.protected100") },
+              { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>, label: t("product.support247"), sub: t("product.alwaysHelp") },
             ].map((info, i) => (
               <div key={i} className="flex items-center gap-2.5 p-3 border" style={{ borderColor: theme.border, borderRadius: br }}>
                 <div className="w-8 h-8 flex items-center justify-center rounded-lg shrink-0" style={{ background: `${theme.globalColor}10`, color: theme.globalColor }}>{info.icon}</div>
@@ -254,9 +254,9 @@ export default function ProductDetailPage() {
       <div className="mb-16">
         <div className="flex gap-1 border-b mb-6" style={{ borderColor: theme.border }}>
           {([
-            { key: "details" as const, label: "Product Details" },
-            { key: "shipping" as const, label: "Shipping Info" },
-            { key: "payment" as const, label: "Payment Methods" },
+            { key: "details" as const, label: t("product.tabDetails") },
+            { key: "shipping" as const, label: t("product.tabShipping") },
+            { key: "payment" as const, label: t("product.tabPayment") },
           ]).map(tab => (
             <button key={tab.key} onClick={() => setActiveTab(tab.key)}
               className="px-5 py-3 text-sm font-bold border-b-2 transition-all -mb-px"
@@ -272,7 +272,7 @@ export default function ProductDetailPage() {
         {activeTab === "details" && (
           <div className="grid md:grid-cols-2 gap-8">
             <div>
-              <h3 className="text-lg font-bold mb-4" style={{ color: theme.textColor }}>Specifications</h3>
+              <h3 className="text-lg font-bold mb-4" style={{ color: theme.textColor }}>{t("product.specifications")}</h3>
               <div className="space-y-0">
                 {specs.map((spec, i) => (
                   <div key={i} className="flex justify-between py-3 border-b" style={{ borderColor: theme.border }}>
@@ -283,12 +283,12 @@ export default function ProductDetailPage() {
               </div>
             </div>
             <div>
-              <h3 className="text-lg font-bold mb-4" style={{ color: theme.textColor }}>Description</h3>
+              <h3 className="text-lg font-bold mb-4" style={{ color: theme.textColor }}>{t("product.descriptionLabel")}</h3>
               <p className="text-sm leading-relaxed" style={{ color: theme.mutedText }}>{displayDescription}</p>
               <div className="mt-6 p-4 border" style={{ borderColor: theme.border, borderRadius: br, background: `${theme.globalColor}05` }}>
-                <p className="text-xs font-bold mb-1" style={{ color: theme.textColor }}>Sku: {`SKU-${String(product.id).padStart(6, "0")}`}</p>
-                <p className="text-xs" style={{ color: theme.mutedText }}>Category: {product.productCategory}</p>
-                <p className="text-xs" style={{ color: theme.mutedText }}>Availability: {isOut ? "Out of Stock" : "In Stock"}</p>
+                <p className="text-xs font-bold mb-1" style={{ color: theme.textColor }}>{t("product.skuLabel")} {`SKU-${String(product.id).padStart(6, "0")}`}</p>
+                <p className="text-xs" style={{ color: theme.mutedText }}>{t("product.categoryLabel")} {displayCategory}</p>
+                <p className="text-xs" style={{ color: theme.mutedText }}>{t("product.availabilityLabel")} {isOut ? t("product.outOfStock") : t("product.inStock")}</p>
               </div>
             </div>
           </div>
@@ -297,24 +297,24 @@ export default function ProductDetailPage() {
         {activeTab === "shipping" && (
           <div className="max-w-2xl space-y-6">
             <div className="p-5 border" style={{ borderColor: theme.border, borderRadius: br }}>
-              <h4 className="font-bold text-sm mb-2" style={{ color: theme.textColor }}>Standard Shipping</h4>
-              <p className="text-sm" style={{ color: theme.mutedText }}>3-7 business days — {shippingCost === 0 ? "FREE" : `$${shippingCost}`}</p>
+              <h4 className="font-bold text-sm mb-2" style={{ color: theme.textColor }}>{t("product.standardShipping")}</h4>
+              <p className="text-sm" style={{ color: theme.mutedText }}>{shippingCost === 0 ? t("product.standardDays") : t("product.standardDaysCost", { cost: `${shippingCost}` })}</p>
             </div>
             <div className="p-5 border" style={{ borderColor: theme.border, borderRadius: br }}>
-              <h4 className="font-bold text-sm mb-2" style={{ color: theme.textColor }}>Express Shipping</h4>
-              <p className="text-sm" style={{ color: theme.mutedText }}>1-2 business days — ${(shippingCost * 2.5 || 15).toFixed(2)}</p>
+              <h4 className="font-bold text-sm mb-2" style={{ color: theme.textColor }}>{t("product.expressShipping")}</h4>
+              <p className="text-sm" style={{ color: theme.mutedText }}>{t("product.expressDays", { cost: `${(shippingCost * 2.5 || 15).toFixed(2)}` })}</p>
             </div>
             <div className="p-5 border" style={{ borderColor: theme.border, borderRadius: br }}>
-              <h4 className="font-bold text-sm mb-2" style={{ color: theme.textColor }}>Free Shipping</h4>
-              <p className="text-sm" style={{ color: theme.mutedText }}>Available on orders over $50</p>
+              <h4 className="font-bold text-sm mb-2" style={{ color: theme.textColor }}>{t("product.freeOnOrders")}</h4>
+              <p className="text-sm" style={{ color: theme.mutedText }}>{t("product.freeOnOrdersDesc")}</p>
             </div>
             <div className="p-5 border" style={{ borderColor: theme.border, borderRadius: br, background: `${theme.globalColor}05` }}>
-              <h4 className="font-bold text-sm mb-2" style={{ color: theme.textColor }}>Tax Information</h4>
+              <h4 className="font-bold text-sm mb-2" style={{ color: theme.textColor }}>{t("product.taxInfo")}</h4>
               <p className="text-sm" style={{ color: theme.mutedText }}>
-                {taxPct > 0 ? `Tax: ${taxPct}% (${taxPct}% = $${tax.toFixed(2)} on this product)` : "No additional tax applied"}
+                {taxPct > 0 ? t("product.taxApplied", { pct: taxPct, amount: tax.toFixed(2) }) : t("product.noTax")}
               </p>
               <p className="text-sm mt-1 font-semibold" style={{ color: theme.textColor }}>
-                Total with tax: ${totalWithTax.toFixed(2)}
+                {t("product.totalWithTax", { total: totalWithTax.toFixed(2) })}
               </p>
             </div>
           </div>
@@ -328,8 +328,8 @@ export default function ProductDetailPage() {
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={theme.globalColor} strokeWidth="1.5"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
                 </div>
                 <div>
-                  <h4 className="font-bold text-sm" style={{ color: theme.textColor }}>Credit / Debit Card</h4>
-                  <p className="text-xs" style={{ color: theme.mutedText }}>Visa, Mastercard, AMEX accepted</p>
+                  <h4 className="font-bold text-sm" style={{ color: theme.textColor }}>{t("product.creditCard")}</h4>
+                  <p className="text-xs" style={{ color: theme.mutedText }}>{t("product.visaAccepted")}</p>
                 </div>
               </div>
             )}
@@ -339,8 +339,8 @@ export default function ProductDetailPage() {
                   <span className="text-lg font-bold" style={{ color: theme.globalColor }}>P</span>
                 </div>
                 <div>
-                  <h4 className="font-bold text-sm" style={{ color: theme.textColor }}>PayPal</h4>
-                  <p className="text-xs" style={{ color: theme.mutedText }}>Pay securely with your PayPal account</p>
+                  <h4 className="font-bold text-sm" style={{ color: theme.textColor }}>{t("product.paypal")}</h4>
+                  <p className="text-xs" style={{ color: theme.mutedText }}>{t("product.paypalDesc")}</p>
                 </div>
               </div>
             )}
@@ -350,8 +350,8 @@ export default function ProductDetailPage() {
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={theme.globalColor} strokeWidth="1.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
                 </div>
                 <div>
-                  <h4 className="font-bold text-sm" style={{ color: theme.textColor }}>Cash on Delivery</h4>
-                  <p className="text-xs" style={{ color: theme.mutedText }}>Pay when you receive your order</p>
+                  <h4 className="font-bold text-sm" style={{ color: theme.textColor }}>{t("product.cashOnDelivery")}</h4>
+                  <p className="text-xs" style={{ color: theme.mutedText }}>{t("product.cashOnDeliveryDesc")}</p>
                 </div>
               </div>
             )}
@@ -361,8 +361,8 @@ export default function ProductDetailPage() {
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={theme.globalColor} strokeWidth="1.5"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
                 </div>
                 <div>
-                  <h4 className="font-bold text-sm" style={{ color: theme.textColor }}>Credit / Debit Card</h4>
-                  <p className="text-xs" style={{ color: theme.mutedText }}>Visa, Mastercard accepted</p>
+                  <h4 className="font-bold text-sm" style={{ color: theme.textColor }}>{t("product.creditCard")}</h4>
+                  <p className="text-xs" style={{ color: theme.mutedText }}>{t("product.visaAcceptedFallback")}</p>
                 </div>
               </div>
             )}
@@ -374,8 +374,8 @@ export default function ProductDetailPage() {
       {relatedProducts.length > 0 && (
         <div className="mb-16">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-black" style={{ color: theme.textColor }}>Related Products</h2>
-            <Link href="/store" className="text-xs font-bold hover:underline" style={{ color: theme.globalColor }}>View All →</Link>
+            <h2 className="text-xl font-black" style={{ color: theme.textColor }}>{t("product.relatedProducts")}</h2>
+            <Link href="/store" className="text-xs font-bold hover:underline" style={{ color: theme.globalColor }}>{t("product.viewAll")}</Link>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
             {relatedProducts.map(p => (
